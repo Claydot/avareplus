@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="2dp"
+    android:paddingTop="2dp">
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ABABAB"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:elevation="10dp">
+
+        <LinearLayout
+            android:id="@+id/LinearLay1"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:orientation="horizontal"
+            android:background="#FFA9A9A9"
+            android:weightSum="1"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+            <TextView
+                android:text="Waypoint"
+                android:layout_width="0px"
+                android:layout_weight="0.17"
+                android:layout_height="wrap_content"
+                android:id="@+id/waypoint" />
+            <TextView
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:id="@+id/type"
+                android:layout_weight="0.1"
+                android:text="Type" />
+            <TextView
+                android:text="Distance"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:id="@+id/distance"
+                android:layout_weight="0.11"/>
+            <TextView
+                android:text="Time"
+                android:layout_width="0px"
+                android:layout_weight="0.1"
+                android:layout_height="wrap_content"
+                android:id="@+id/time" />
+
+            <TextView
+                android:text="Course"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:id="@+id/course"
+                android:layout_weight="0.1" />
+
+            <TextView
+                android:text="Heading"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:id="@+id/heading"
+                android:layout_weight="0.15" />
+            <TextView
+                android:text="Wind"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:id="@+id/wind"
+                android:layout_weight="0.1" />
+            <TextView
+                android:text="Fuel"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:id="@+id/fuel"
+                android:layout_weight="0.08"/>
+            <ImageView
+                android:id="@+id/image_menu"
+                android:layout_width="0px"
+                android:src="@drawable/menu_resize"
+                android:layout_height="40dp"
+                android:layout_weight="0.15"/>
+            </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

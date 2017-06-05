@@ -39,8 +39,11 @@ dependencies {
     compile 'ch.acra:acra:4.7.0'
     compile 'org.xmlunit:xmlunit-core:2.3.0'
     compile 'org.xmlunit:xmlunit-matchers:2.3.0'
-    compile 'com.github.woxthebox:draglistview:1.4.4'
     compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:25.+'
+
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.4.0'
     testCompile 'org.powermock:powermock-module-junit4:1.7.0RC2'

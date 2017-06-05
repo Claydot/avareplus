@@ -14,6 +14,8 @@ package com.ds.avareplus;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,7 +27,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -43,18 +48,18 @@ import com.ds.avareplus.utils.DecoratedAlertDialogBuilder;
 import com.ds.avareplus.utils.GenericCallback;
 import com.ds.avareplus.utils.Helper;
 import com.ds.avareplus.webinfc.WebAppPlanInterface;
-import com.woxthebox.draglistview.DragListView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import static java.security.AccessController.getContext;
-
+import java.util.List;
 /**
  * @author zkhan
  * An activity that deals with flight plans - loading, creating, deleting and activating
  */
-public class PlanActivity extends Activity implements PlanFragment.FragListener {
+public class PlanActivity extends FragmentActivity implements OnStartDragListener {
 
     /*
      * (non-Javadoc)
@@ -66,8 +71,9 @@ public class PlanActivity extends Activity implements PlanFragment.FragListener 
 
     private Button mBSearch;
     private View frag;
+    private RecyclerView mRecyclerView;
+    private ItemTouchHelper mItemTouchHelper;
 
-    private Fragment mFragment;
 
     @Override
     public void onBackPressed() {
@@ -91,8 +97,6 @@ public class PlanActivity extends Activity implements PlanFragment.FragListener 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.planplus, null);
         setContentView(view);
-        //frag = view.findViewById(R.id.planF);
-        //frag.setVisibility(View.GONE);
 
         Button mBSearch = (Button) view.findViewById(R.id.Search_Button);
         mBSearch.setOnClickListener(new View.OnClickListener() {
@@ -107,18 +111,37 @@ public class PlanActivity extends Activity implements PlanFragment.FragListener 
         });
 
 
-        //need to change fragment to whatever
-        getFragmentManager().beginTransaction()
-            .add(R.id.fragment_container, mFragment)
-            .commit();
+        //new code
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+
+        List<ItemModel> list = new ArrayList<>();
+        list.add(new ItemModel("ATL", "AP", "5", "12", "132", "13","23","75"));
+        list.add(new ItemModel("JFK", "AP", "1000", "121", "10", "124","432","100"));
+        list.add(new ItemModel("LGA", "AP", "12", "142", "10", "13","263","75"));
+        list.add(new ItemModel("SAT", "AP", "24", "122", "1132", "13","253","75"));
+        list.add(new ItemModel("OKC", "AP", "53", "124", "134", "12","43","75"));
+        list.add(new ItemModel("SAN", "AP", "15", "112", "15", "15","13","75"));
+        list.add(new ItemModel("LAX", "AP", "98", "52", "122", "1453","23","75"));
+        list.add(new ItemModel("DEN", "AP", "34", "42", "2", "113","23","75"));
+        mRecyclerView.setHasFixedSize(true);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        ItemAdapter mAdapter = new ItemAdapter(this, list, this);
+        ItemTouchHelper.Callback callback =
+                new EditItemTouchHelperCallback(mAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+        mRecyclerView.setAdapter(mAdapter);
 
 
-
-
-
+        //end code
 
 
     }
+
+
+
 
 
 
@@ -170,6 +193,11 @@ public class PlanActivity extends Activity implements PlanFragment.FragListener 
     public void up() {
 
 
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
     }
 
 

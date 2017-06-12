@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.ds.avareplus.place.Destination;
 
 import junit.framework.Test;
 
@@ -23,15 +26,15 @@ import java.util.List;
  */
 public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
 
-    private List<ItemModel> mPersonList;
+    private List<Destination> mDestinationList;
     OnItemClickListener mItemClickListener;
     private static final int TYPE_ITEM = 0;
     private final LayoutInflater mInflater;
     private final OnStartDragListener mDragStartListener;
     private Context mContext;
 
-    public ItemAdapter(Context context, List<ItemModel> list, OnStartDragListener dragListner) {
-        this.mPersonList = list;
+    public ItemAdapter(Context context, List<Destination> list, OnStartDragListener dragListner) {
+        this.mDestinationList = list;
         this.mInflater = LayoutInflater.from(context);
         mDragStartListener = dragListner;
         mContext = context;
@@ -66,15 +69,15 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             final VHItem holder= (VHItem)viewHolder;
 
 
-            ((VHItem) viewHolder).waypoint.setText(mPersonList.get(i).getWaypoint());
-            ((VHItem) viewHolder).type.setText(mPersonList.get(i).getType());
-            ((VHItem) viewHolder).distance.setText(mPersonList.get(i).getDistance());
+            ((VHItem) viewHolder).waypoint.setText(mDestinationList.get(i).getID());
+            ((VHItem) viewHolder).type.setText(mDestinationList.get(i).getType());
+            ((VHItem) viewHolder).distance.setText(String.valueOf(mDestinationList.get(i).getDistance()));
 
-            ((VHItem) viewHolder).time.setText(mPersonList.get(i).getTime());
-            ((VHItem) viewHolder).course.setText(mPersonList.get(i).getCourse());
-            ((VHItem) viewHolder).heading.setText(mPersonList.get(i).getHeading());
-            ((VHItem) viewHolder).wind.setText(mPersonList.get(i).getWind());
-            ((VHItem) viewHolder).fuel.setText(mPersonList.get(i).getFuel());
+            ((VHItem) viewHolder).time.setText(mDestinationList.get(i).getEte());
+            ((VHItem) viewHolder).course.setText(mDestinationList.get(i).getCourse());
+            ((VHItem) viewHolder).heading.setText("");
+            ((VHItem) viewHolder).wind.setText(mDestinationList.get(i).getWinds());
+            ((VHItem) viewHolder).fuel.setText(mDestinationList.get(i).getFuel());
 
 
 
@@ -91,12 +94,33 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                     return false;
                 }
             });
+
+            ((VHItem) viewHolder).holo.setOnTouchListener(new OnSwipeTouchListener(mContext) {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+
+                    if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                        mDragStartListener.onStartDrag(holder);
+                    }
+                    return false;
+                }
+
+
+
+                public void onSwipeLeft() {
+                    Toast.makeText(mContext, "left", Toast.LENGTH_SHORT).show();
+                }
+
+
+            });
+
         }
     }
 
     @Override
     public int getItemCount() {
-        return mPersonList.size();
+        return mDestinationList.size();
     }
 
     public interface OnItemClickListener {
@@ -118,12 +142,14 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         public TextView heading;
         public TextView wind;
         public TextView fuel;
+        private ImageView holo;
 
 
         public VHItem(View itemView) {
             super(itemView);
 
             image_menu = (ImageView) itemView.findViewById(R.id.image_menu);
+            holo = (ImageView) itemView.findViewById(R.id.holo);
 
             waypoint = (TextView) itemView.findViewById(R.id.waypoint);
             type = (TextView) itemView.findViewById(R.id.type);
@@ -157,21 +183,21 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     @Override
     public void onItemDismiss(int position) {
-        mPersonList.remove(position);
+        mDestinationList.remove(position);
         notifyItemRemoved(position);
     }
 
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
         //Log.v("", "Log position" + fromPosition + " " + toPosition);
-        if (fromPosition < mPersonList.size() && toPosition < mPersonList.size()) {
+        if (fromPosition < mDestinationList.size() && toPosition < mDestinationList.size()) {
             if (fromPosition < toPosition) {
                 for (int i = fromPosition; i < toPosition; i++) {
-                    Collections.swap(mPersonList, i, i + 1);
+                    Collections.swap(mDestinationList, i, i + 1);
                 }
             } else {
                 for (int i = fromPosition; i > toPosition; i--) {
-                    Collections.swap(mPersonList, i, i - 1);
+                    Collections.swap(mDestinationList, i, i - 1);
                 }
             }
             notifyItemMoved(fromPosition, toPosition);
@@ -179,8 +205,8 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         return true;
     }
 
-    public void updateList(List<ItemModel> list) {
-        mPersonList = list;
+    public void updateList(List<Destination> list) {
+        mDestinationList = list;
         notifyDataSetChanged();
     }
 }

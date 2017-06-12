@@ -44,6 +44,8 @@ import android.widget.ProgressBar;
 import android.support.v4.app.Fragment;
 
 import com.ds.avareplus.gps.GpsInterface;
+import com.ds.avareplus.place.Destination;
+import com.ds.avareplus.place.Plan;
 import com.ds.avareplus.utils.DecoratedAlertDialogBuilder;
 import com.ds.avareplus.utils.GenericCallback;
 import com.ds.avareplus.utils.Helper;
@@ -73,6 +75,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     private View frag;
     private RecyclerView mRecyclerView;
     private ItemTouchHelper mItemTouchHelper;
+    private ItemAdapter mAdapter;
 
 
     @Override
@@ -114,20 +117,11 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         //new code
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
-        List<ItemModel> list = new ArrayList<>();
-        list.add(new ItemModel("ATL", "AP", "5", "12", "132", "13","23","75"));
-        list.add(new ItemModel("JFK", "AP", "1000", "121", "10", "124","432","100"));
-        list.add(new ItemModel("LGA", "AP", "12", "142", "10", "13","263","75"));
-        list.add(new ItemModel("SAT", "AP", "24", "122", "1132", "13","253","75"));
-        list.add(new ItemModel("OKC", "AP", "53", "124", "134", "12","43","75"));
-        list.add(new ItemModel("SAN", "AP", "15", "112", "15", "15","13","75"));
-        list.add(new ItemModel("LAX", "AP", "98", "52", "122", "1453","23","75"));
-        list.add(new ItemModel("DEN", "AP", "34", "42", "2", "113","23","75"));
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        ItemAdapter mAdapter = new ItemAdapter(this, list, this);
+        mAdapter = new ItemAdapter(this, null, this);
         ItemTouchHelper.Callback callback =
                 new EditItemTouchHelperCallback(mAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
@@ -198,6 +192,24 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
+    }
+
+    public List<Destination> planToList(Plan plan) {
+
+        List<Destination> list = new ArrayList<>();
+        int i = 0;
+
+        while(plan.getDestination(i) != null) {
+            list.add(plan.getDestination(i));
+        }
+
+        return list;
+
+    }
+
+    public void updatePlan(List<Destination> list) {
+
+        mAdapter.updateList(list);
     }
 
 

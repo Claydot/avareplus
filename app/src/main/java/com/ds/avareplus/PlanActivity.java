@@ -52,6 +52,7 @@ import android.widget.Toast;
 
 import com.ds.avareplus.gps.GpsInterface;
 import com.ds.avareplus.place.Destination;
+import com.ds.avareplus.place.DestinationFactory;
 import com.ds.avareplus.place.Plan;
 import com.ds.avareplus.storage.Preferences;
 import com.ds.avareplus.storage.StringPreference;
@@ -183,7 +184,11 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
                 // When clicked, show a toast with the TextView text
                 Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
                         Toast.LENGTH_SHORT).show();
-
+                String val = ((TextView) view).getText().toString();
+                String name = StringPreference.parseHashedNameId(val);
+                String type = StringPreference.parseHashedNameDestType(val);
+                String dbtype = StringPreference.parseHashedNameDbType(val);
+                addToPlan(name, type, dbtype);
 
             }
         });
@@ -315,6 +320,8 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
         while(plan.getDestination(i) != null) {
             list.add(plan.getDestination(i));
+            i++;
+
         }
         return list;
     }
@@ -447,8 +454,30 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     }
 
     private String searchParser(String val) {
-
         return val;
+        //need to make custom adapter for Search List
+    }
+
+
+
+
+
+
+
+
+    private void addToPlan(String id, String type, String subtype)  {
+        if (mPlan == null) {
+            mPlan = new Plan(this, mService);
+        }
+        //add destination
+    	/*
+    	 * Add from JS search query
+    	 */
+
+        Destination d = DestinationFactory.build(mService, id, type);
+        d.find(subtype);
+        mPlan.appendDestination(d);
+        updatePlan();
     }
 
 

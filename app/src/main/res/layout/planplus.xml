@@ -31,6 +31,12 @@
 
     </LinearLayout>
 
+    <ListView
+        android:id="@+id/search_plan"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:id="@+id/LinearLay1"
         android:layout_width="match_parent"

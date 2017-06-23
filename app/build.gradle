@@ -4,7 +4,7 @@ android {
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId 'com.ds.avareplus'
-        minSdkVersion 11
+        minSdkVersion 14
         targetSdkVersion 25
     }
     dependencies {

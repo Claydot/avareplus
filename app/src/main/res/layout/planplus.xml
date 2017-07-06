@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/LinearLay"
         android:layout_width="match_parent"
@@ -35,6 +34,13 @@
         android:id="@+id/search_plan"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:weightSum="1"
+        android:visibility="gone"/>
+    <ListView
+        android:id="@+id/load_plan"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:weightSum="1"
         android:visibility="gone"/>
 
     <LinearLayout
@@ -111,7 +117,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="300dp">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
@@ -119,7 +125,39 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#545454"/>
-
-
     </RelativeLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/Linear2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFA9A9A9"
+        android:weightSum="1">
+
+
+        <Button
+            android:text="Save"
+            android:layout_width="0px"
+            android:layout_weight=".33"
+            android:layout_height="wrap_content"
+            android:id="@+id/save_button" />
+
+        <Button
+            android:text="Activate"
+            android:layout_width="0px"
+            android:layout_weight=".33"
+            android:layout_height="wrap_content"
+            android:id="@+id/activate_button" />
+
+        <Button
+            android:text="Load"
+            android:layout_width="0px"
+            android:layout_weight=".33"
+            android:layout_height="wrap_content"
+            android:id="@+id/load_button" />
+
+
+    </LinearLayout>
+
 </LinearLayout>

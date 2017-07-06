@@ -11,6 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avareplus;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -50,6 +51,7 @@ import android.support.v4.app.Fragment;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ds.avareplus.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avareplus.gps.GpsInterface;
 import com.ds.avareplus.place.Destination;
 import com.ds.avareplus.place.DestinationFactory;
@@ -62,6 +64,7 @@ import com.ds.avareplus.utils.Helper;
 import com.ds.avareplus.webinfc.WebAppPlanInterface;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -86,10 +89,15 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     private Preferences mPref;
 
 
+
     private Button mBSearch;
     private RecyclerView mRecyclerView;
     private ListView mListView;
+    private ListView mLoadTable;
     private EditText mSearchInput;
+    private Button mActivateButton;
+    private Button mLoadButton;
+    private Button mSaveButton;
 
 
 
@@ -100,11 +108,13 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     private LinkedHashMap<String, String> mSavedPlans;
     private Context mContext;
     private SearchTask mSearchTask;
+    ArrayList<String> mPlanList = new ArrayList<>();
 
 
     ArrayList<String> mSearchList = new ArrayList<>();
     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
     ArrayAdapter mSearchAdapter;
+    ArrayAdapter mLoadAdapter;
 
 
     @Override
@@ -120,6 +130,11 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+
+        mPref = new Preferences(this.getApplicationContext());
+
+        getPlanNames(10);
         mContext = this;
 
         Helper.setTheme(this);
@@ -155,6 +170,29 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         });
 
 
+        mLoadButton = (Button) view.findViewById(R.id.load_button);
+        mLoadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mLoadTable.getVisibility() == View.VISIBLE) {
+                    mLoadTable.setVisibility(View.GONE);
+                } else {
+                    mLoadTable.setVisibility(View.VISIBLE);
+                }
+                getPlanNames(10);
+                mLoadAdapter.notifyDataSetChanged();
+
+            }
+        });
+        mSaveButton = (Button) view.findViewById(R.id.save_button);
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                savePlan(mSearchInput.getText().toString());
+                getPlanNames(10);
+                mLoadAdapter.notifyDataSetChanged();
+             }
+        });
         //new code
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
@@ -171,8 +209,6 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
 
         //end code
-
-
         mListView = (ListView) view.findViewById(R.id.search_plan);
         mSearchAdapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1,
@@ -189,19 +225,49 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
                 String type = StringPreference.parseHashedNameDestType(val);
                 String dbtype = StringPreference.parseHashedNameDbType(val);
                 addToPlan(name, type, dbtype);
+                mListView.setVisibility(View.GONE);
+            }
+        });
+
+        mLoadTable = (ListView) view.findViewById(R.id.load_plan);
+        mLoadAdapter = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1,
+                mPlanList);
+        mLoadTable.setAdapter(mLoadAdapter);
+        mLoadTable.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                String val = ((TextView) view).getText().toString();
+                loadPlan(val);
 
             }
         });
+
+        mActivateButton = (Button) view.findViewById(R.id.activate_button);
+        mActivateButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Plan plan = mService.getPlan();
+
+                if (plan.isActive()) {
+                    plan.makeInactive();
+                    mService.setDestination(null);
+                    mActivateButton.setText("Deactivate");
+                } else {
+                    plan.makeActive(mService.getGpsParams());
+                    if (plan.getDestination(plan.findNextNotPassed()) != null) {
+                        mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
+                        mActivateButton.setText(getString(R.string.Active));
+                    }
+                }
+            }
+
+
+        });
     }
-
-
-
-
-
-
-
-
-
 
     @Override
     protected void onStart() {
@@ -211,6 +277,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
     @Override
     public void onResume() {
+
         super.onResume();
         Helper.setOrientationAndOn(this);
         Intent intent = new Intent(this, StorageService.class);
@@ -223,8 +290,6 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     @Override
     protected void onPause() {
         super.onPause();
-
-
     }
 
 
@@ -377,7 +442,8 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
     private void connect(StorageService s) {
         mService = s;
-//        mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+
+        mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
         mPlan = mService.getPlan();
         Log.d("Connect", "mService Connected");
         updatePlan();
@@ -481,8 +547,132 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     }
 
 
+    //additional Functions to add
+    //TODO also add delete and clear
+    //TODO also add way to reorder list
+
+    private void activatePlan() {
+        Plan plan = mService.getPlan();
+        if(plan.isActive()) {
+            plan.makeInactive();
+            mService.setDestination(null);
+            mActivateButton.setText("Activate");
+        }
+        else {
+            plan.makeActive(mService.getGpsParams());
+            if(plan.getDestination(plan.findNextNotPassed()) != null) {
+                mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
+            }
+            mActivateButton.setText("Deactivate");
+        }
+    }
+
+    private void savePlan(String name) {
+
+        Plan plan = mService.getPlan();
+        if(plan.getDestinationNumber() < 2) {
+            // Anything less than 2 is not a plan
+            return;
+        }
+
+        plan.setName(name);
+        String format = plan.putPlanToStorageFormat();
+        mSavedPlans.put(name, format);
+        mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
+        //setFilteredSize();
+
+        //newSavePlan();
+    }
+
+    public void loadPlan(String name) {
+
+        // If we have an active plan, we need to turn it off now since we are
+        // loading a new one.
+        Plan plan = mService.getPlan();
+        if(null != plan) {
+            plan.makeInactive();
+
+            // If it is an external plan, tell it to unload
+            ExternalFlightPlan efp = mService.getExternalPlanMgr().get(plan.getName());
+            if(null != efp) {
+                efp.unload(mService);
+            }
+        }
+
+        // Clear out any destination that may have been set.
+        mService.setDestination(null);
+
+        // If this is defined as an external flight plan, then tell it we
+        // are loading into memory.
+        ExternalFlightPlan efp = mService.getExternalPlanMgr().get(name);
+        if(null != efp) {
+            efp.load(mService);
+        }
+
+        mService.newPlanFromStorage(mSavedPlans.get(name), false);
+        mService.getPlan().setName(name);
+        newPlan();
+    }
+
+    //use to display Plan names
+
+    public void addPlanNames() {
+
+    }
+
+    public void getPlanNames(int dispQty) {
+        mPlanList.clear();
+
+        if (mSavedPlans == null) {
+            return;
+        }
+        //Init some local variables we will be using
+        int planIdx = 0;	// Used to count where we are in the plan list
+        ArrayList<String> planNames = new ArrayList<String>();
+        Iterator<String> it = mSavedPlans.keySet().iterator();
+
+        // As long as we have items in the list and need items for display
+        while(it.hasNext() && dispQty > 0) {
+
+            // Get the plan name from the iterator
+            String planName = it.next();
+
+            // Does this name qualify for display ?
+            if(true) {
+
+                // Is our walking index passed our current display index ?
+                if(++planIdx > 0) {
+
+                    // Add the name to the collection for display
+                    mPlanList.add(planName);
+
+                    // Adjust our displayed item counter
+                    dispQty--;
+                }
+            }
+        }
+
+        // Our collection is complete
+    }
+
+    public void refreshPlanList() {
+        mService.getExternalPlanMgr().forceReload();
+        mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+    }
+    /**
+     * New plan when the plan changes.
+     */
 
 
+    public void newPlan() {
+        mPlan.clear();
+        Plan plan = mService.getPlan();
+        int num = plan.getDestinationNumber();
+        for(int dest = 0; dest < num; dest++) {
+            Destination d = plan.getDestination(dest);
+            addToPlan(d.getID(), d.getType(), d.getFacilityName());
+        }
+    }
 
 
 }

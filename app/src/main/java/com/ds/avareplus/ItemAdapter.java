@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ds.avareplus.place.Destination;
+import com.ds.avareplus.userDefinedWaypoints.Waypoint;
 
 import junit.framework.Test;
 
@@ -32,6 +33,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private final LayoutInflater mInflater;
     private final OnStartDragListener mDragStartListener;
     private Context mContext;
+    private int selected;
 
     public ItemAdapter(Context context, List<Destination> list, OnStartDragListener dragListner) {
         this.mDestinationList = list;
@@ -67,6 +69,13 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         if (viewHolder instanceof VHItem) {
 
             final VHItem holder= (VHItem)viewHolder;
+            holder.container.setBackgroundColor(Color.LTGRAY);
+            if (i == selected) {
+                holder.container.setBackgroundColor(Color.argb(255,40,40,40));
+            }
+
+
+            ((VHItem) viewHolder).setWaypoint(mDestinationList.get(i));
 
 
             ((VHItem) viewHolder).waypoint.setText(mDestinationList.get(i).getID());
@@ -95,8 +104,28 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                 }
             });
 
+            ((VHItem) viewHolder).image_select.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+
+                    if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+
+                        //enter code here to select as next destination
+                        ((PlanActivity) mContext).newDestination(mDestinationList.get(i));
+                        selected = holder.getAdapterPosition();
+                        updateList(mDestinationList);
+
+
+
+                    }
+                    return false;
+                }
+            });
+
             ((VHItem) viewHolder).holo.setOnTouchListener(new OnSwipeTouchListener(mContext) {
 
+                //add functionality to select
+                /*
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
 
@@ -105,11 +134,16 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                     }
                     return false;
                 }
+                */
 
 
-
+                //add functionality to delete
                 public void onSwipeLeft() {
-                    Toast.makeText(mContext, "left", Toast.LENGTH_SHORT).show();
+                     mDestinationList.remove(i);
+                    updateList(mDestinationList);
+                    Toast.makeText(mContext, "Waypoint Deleted", Toast.LENGTH_SHORT).show();
+
+                    ((PlanActivity) mContext).delete();
                 }
 
 
@@ -117,6 +151,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
         }
     }
+
 
     @Override
     public int getItemCount() {
@@ -135,6 +170,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     public class VHItem extends RecyclerView.ViewHolder implements View.OnClickListener ,ItemTouchHelperViewHolder{
 
         private ImageView image_menu; //set this to whatever u want to use to drag
+        private ImageView image_select;
         public TextView waypoint;
         public TextView type;
         public TextView distance;
@@ -143,13 +179,18 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         public TextView heading;
         public TextView wind;
         public TextView fuel;
+        public View container;
         private ImageView holo;
+        private Destination data;
 
 
         public VHItem(View itemView) {
             super(itemView);
 
+            data = null;
+            container = (View) itemView.findViewById(R.id.container);
             image_menu = (ImageView) itemView.findViewById(R.id.image_menu);
+            image_select = (ImageView) itemView.findViewById(R.id.image_Select);
             holo = (ImageView) itemView.findViewById(R.id.holo);
 
             waypoint = (TextView) itemView.findViewById(R.id.waypoint);
@@ -180,6 +221,15 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         public void onItemClear() {
             itemView.setBackgroundColor(0);
         }
+
+        public Destination getWaypoint() {
+            return data;
+        }
+
+        public void setWaypoint(Destination wayPo) {
+            data = wayPo;
+        }
+
     }
 
     @Override
@@ -210,4 +260,9 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         mDestinationList = list;
         notifyDataSetChanged();
     }
+
+    public List<Destination> getDestinationList() {
+        return mDestinationList;
+    }
+
 }

@@ -160,4 +160,21 @@
 
     </LinearLayout>
 
+    <Button
+        android:text="Delete Plan"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete_plan" />
+
+    <Button
+        android:text="Undo"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/undo_plan" />
+    <Button
+        android:text="Redo"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/redo_plan" />
+
 </LinearLayout>

@@ -87,6 +87,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     private int currentWaypoint;
     private StorageService mService;
     private Preferences mPref;
+    private String currentPlan;
 
 
 
@@ -98,6 +99,9 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     private Button mActivateButton;
     private Button mLoadButton;
     private Button mSaveButton;
+    private Button mDeleteButton;
+    private Button mUndoButton;
+    private Button mRedoButton;
 
 
 
@@ -140,9 +144,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-
-
+        new Undo();
 
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -237,11 +239,25 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         mLoadTable.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
                 String val = ((TextView) view).getText().toString();
+                currentPlan = val;
                 loadPlan(val);
-
+                mLoadTable.setVisibility(View.GONE);
             }
+        });
+
+
+        mDeleteButton = (Button) view.findViewById(R.id.delete_plan);
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(currentPlan != null) {
+                    deletePlan(currentPlan);
+                }
+            }
+
+
         });
 
         mActivateButton = (Button) view.findViewById(R.id.activate_button);
@@ -257,6 +273,13 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
                     mService.setDestination(null);
                     mActivateButton.setText("Deactivate");
                 } else {
+
+                    plan.clear();
+                    List<Destination> dList = mAdapter.getDestinationList();
+                    for(Destination d: dList) {
+                        plan.appendDestination(d);
+                    }
+
                     plan.makeActive(mService.getGpsParams());
                     if (plan.getDestination(plan.findNextNotPassed()) != null) {
                         mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
@@ -267,6 +290,26 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
 
         });
+
+        mRedoButton = (Button) view.findViewById(R.id.redo_plan);
+        mRedoButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                redo();
+            }
+        });
+
+
+        mUndoButton = (Button) view.findViewById(R.id.undo_plan);
+        mUndoButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                undo();
+            }
+        });
+
     }
 
     @Override
@@ -393,8 +436,9 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
 
     public void updatePlan() {
-
-        mAdapter.updateList(planToList(mPlan));
+        if (mPlan != null) {
+            mAdapter.updateList(planToList(mPlan));
+        }
     }
 
 
@@ -539,11 +583,18 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     	/*
     	 * Add from JS search query
     	 */
+            mPlan.clear();
+            List<Destination> dList = mAdapter.getDestinationList();
+            for(Destination d: dList) {
+                mPlan.appendDestination(d);
+            }
 
         Destination d = DestinationFactory.build(mService, id, type);
         d.find(subtype);
+
         mPlan.appendDestination(d);
         updatePlan();
+        Undo.change(this, mService, planToList(mPlan));
     }
 
 
@@ -674,5 +725,37 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         }
     }
 
+    public void deletePlan(String name) {
+        mPlan.clear();
+        updatePlan();
+        mSavedPlans.remove(name);
+        mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
 
+    }
+
+    public void newDestination(Destination d) {
+        mService.setDestination(d);
+    }
+
+    public void undo() {
+        mPlan = Undo.undo();
+        updatePlan();
+
+    }
+
+    public void redo(){
+        mPlan = Undo.redo();
+        updatePlan();
+    }
+
+    public void delete() {
+        mPlan.clear();
+        List<Destination> dList = mAdapter.getDestinationList();
+        for(Destination d: dList) {
+            mPlan.appendDestination(d);
+        }
+        Undo.change(this, mService, planToList(mPlan));
+        updatePlan();
+
+    }
 }

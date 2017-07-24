@@ -59,7 +59,6 @@ public class MainActivity extends TabActivity {
     public static final int tabChecklist = 8;
     public static final int tabWXB = 9;
     public static final int tabTools = 10;
-    
     @Override
     /**
      * 
@@ -108,6 +107,7 @@ public class MainActivity extends TabActivity {
         setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
+        setupTab(new TextView(this), "Radio", new Intent(this, RadioActivity.class), getIntent());
 
         if(0 != (tabItems & (1 << tabNear))) {
         	setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());

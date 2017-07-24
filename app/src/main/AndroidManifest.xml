@@ -73,6 +73,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name="com.ds.avareplus.RegisterActivity"/>
         <activity android:name="com.ds.avareplus.ThreeDActivity"/>
         <activity android:name="com.ds.avareplus.SyncActivity"/>
+        <activity android:name="com.ds.avareplus.RadioActivity"/>
         <activity android:name="com.ds.avareplus.MessageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

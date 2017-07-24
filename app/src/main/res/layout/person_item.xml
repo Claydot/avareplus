@@ -30,7 +30,7 @@
             <TextView
                 android:text="Waypoint"
                 android:layout_width="0px"
-                android:layout_weight="0.17"
+                android:layout_weight="0.1"
                 android:layout_height="wrap_content"
                 android:id="@+id/waypoint" />
             <TextView
@@ -64,7 +64,7 @@
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:id="@+id/heading"
-                android:layout_weight="0.15" />
+                android:layout_weight="0.1" />
             <TextView
                 android:text="Wind"
                 android:layout_width="0px"
@@ -77,6 +77,14 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/fuel"
                 android:layout_weight="0.08"/>
+
+            <ImageView
+                android:id="@+id/image_Select"
+                android:layout_width="0px"
+                android:src="@drawable/vor"
+                android:layout_height="40dp"
+                android:layout_weight="0.1"/>
+
             <ImageView
                 android:id="@+id/image_menu"
                 android:layout_width="0px"
@@ -87,7 +95,7 @@
 
         <ImageView
             android:id="@+id/holo"
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="40dp"
             />
 

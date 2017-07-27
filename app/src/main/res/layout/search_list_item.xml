@@ -28,79 +28,34 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
             <TextView
-                android:text=""
+                android:text="Waypoint"
                 android:layout_width="0px"
                 android:layout_weight="0.1"
                 android:layout_height="wrap_content"
-                android:id="@+id/waypoint" />
+                android:id="@+id/code" />
             <TextView
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:id="@+id/type"
                 android:layout_weight="0.1"
                 android:text="Type" />
-            <TextView
-                android:text=""
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:id="@+id/distance"
-                android:layout_weight="0.11"/>
-            <TextView
-                android:text="Time"
-                android:layout_width="0px"
-                android:layout_weight="0.1"
-                android:layout_height="wrap_content"
-                android:id="@+id/time" />
 
             <TextView
                 android:text="Course"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
-                android:id="@+id/course"
+                android:id="@+id/add_type"
                 android:layout_weight="0.1" />
 
             <TextView
-                android:text="Heading"
+                android:text=""
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
-                android:id="@+id/heading"
+                android:id="@+id/name"
                 android:layout_weight="0.1" />
-            <TextView
-                android:text="Wind"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:id="@+id/wind"
-                android:layout_weight="0.1" />
-            <TextView
-                android:text="Fuel"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:id="@+id/fuel"
-                android:layout_weight="0.08"/>
 
-            <ImageView
-                android:id="@+id/image_Select"
-                android:layout_width="0px"
-                android:src="@drawable/vor"
-                android:layout_height="40dp"
-                android:layout_weight="0.1"/>
 
-            <ImageView
-                android:id="@+id/image_menu"
-                android:layout_width="0px"
-                android:src="@drawable/menu_resize"
-                android:layout_height="40dp"
-                android:layout_weight="0.15"/>
-            </LinearLayout>
-
-        <ImageView
-            android:id="@+id/holo"
-            android:layout_width="300dp"
-            android:layout_height="40dp"
-            />
-
+        </LinearLayout>
 
     </RelativeLayout>
-
-
 </RelativeLayout>

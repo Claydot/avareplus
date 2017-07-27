@@ -232,17 +232,25 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
         //end code
         mListView = (ListView) view.findViewById(R.id.search_plan);
+
+        /*
         mSearchAdapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1,
                 mSearchList);
+
+        */
+        mSearchAdapter = new SearchListAdapter(this, mSearchList);
+
         mListView.setAdapter(mSearchAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // When clicked, show a toast with the TextView text
-                Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
+                String val = mSearchList.get((int) id);
+
+                Toast.makeText(getApplicationContext(), val,
                         Toast.LENGTH_SHORT).show();
-                String val = ((TextView) view).getText().toString();
+
                 String name = StringPreference.parseHashedNameId(val);
                 String type = StringPreference.parseHashedNameDestType(val);
                 String dbtype = StringPreference.parseHashedNameDbType(val);

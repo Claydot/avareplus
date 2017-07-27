@@ -32,6 +32,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -103,6 +104,10 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     private Button mUndoButton;
     private Button mRedoButton;
 
+    private TextView mTotalEte;
+    private TextView mTotalFuel;
+    private TextView mTotalDistance;
+
 
 
 
@@ -151,6 +156,23 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         View view = layoutInflater.inflate(R.layout.planplus, null);
         setContentView(view);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         mSearchInput = (EditText) view.findViewById(R.id.editText);
 
 
@@ -190,9 +212,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                savePlan(mSearchInput.getText().toString());
-                getPlanNames(10);
-                mLoadAdapter.notifyDataSetChanged();
+                saveDialog();
              }
         });
         //new code
@@ -438,7 +458,12 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     public void updatePlan() {
         if (mPlan != null) {
             mAdapter.updateList(planToList(mPlan));
+        } else {
+
+            mAdapter.updateList( new ArrayList<Destination>());
         }
+
+
     }
 
 
@@ -639,6 +664,10 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
         // If we have an active plan, we need to turn it off now since we are
         // loading a new one.
+
+        //remove waypoints from list TODO
+
+
         Plan plan = mService.getPlan();
         if(null != plan) {
             plan.makeInactive();
@@ -717,6 +746,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
 
     public void newPlan() {
         mPlan.clear();
+        updatePlan();
         Plan plan = mService.getPlan();
         int num = plan.getDestinationNumber();
         for(int dest = 0; dest < num; dest++) {
@@ -726,8 +756,10 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     }
 
     public void deletePlan(String name) {
-        mPlan.clear();
-        updatePlan();
+        if (mPlan != null) {
+            mPlan.clear();
+        }
+            updatePlan();
         mSavedPlans.remove(name);
         mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
 
@@ -757,5 +789,17 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         Undo.change(this, mService, planToList(mPlan));
         updatePlan();
 
+
     }
+    public void save(String name) {
+        savePlan(name);
+        getPlanNames(10);
+        mLoadAdapter.notifyDataSetChanged();
+
+
+    }
+    public void saveDialog() {
+        InputDialog.planSaveDialog(this);
+    }
+
 }

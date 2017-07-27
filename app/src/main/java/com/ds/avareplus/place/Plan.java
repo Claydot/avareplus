@@ -409,6 +409,22 @@ public class Plan implements Observer {
                 mEte, mBearing, mDeclination) + " " + mFuel;
     }
 
+    //Basically get getters for everything above to use with the new plan activity
+
+    public String getTotalEte() {
+        return mEte;
+    }
+
+    public String getTotalDistance() {
+        return Double.toString(mDistance) + Preferences.distanceConversionUnit;
+    }
+
+    public String getTotalFuel() {
+        return mFuel;
+    }
+
+
+
     /**
      * Activate flight plan
      */

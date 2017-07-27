@@ -114,6 +114,59 @@
             android:layout_weight=".15"/>
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLay2"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        android:background="#FFA9A9A9"
+        android:weightSum="1">
+        <Space
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight=".17"/>
+        <Space
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight=".1"/>
+        <TextView
+            android:text="---"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:id="@+id/total_distance"
+            android:layout_weight="0.11"/>
+        <TextView
+            android:text="---"
+            android:layout_width="0px"
+            android:layout_weight="0.1"
+            android:layout_height="wrap_content"
+            android:id="@+id/total_time" />
+        <Space
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight=".1"/>
+        <Space
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight=".15"/>
+
+        <Space
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight=".1"/>
+
+        <TextView
+            android:text="---"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:id="@+id/total_fuel"
+            android:layout_weight="0.08"/>
+        <Space
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight=".15"/>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -26,7 +26,7 @@ public class Undo {
 
 
     public static Plan undo() {
-        if(counter < 5) counter++;
+        if(counter < 4) counter++;
         return mPlans[counter];
     }
 
@@ -36,11 +36,11 @@ public class Undo {
     }
 
     public static void change(Context cont, StorageService serve, List<Destination> dest) {
+        counter = 0;
         Plan[] planBuffer = new Plan[4];
         for (int i = 0; i < 4; i++) {
             planBuffer[i] = mPlans[i];
         }
-        mPlans[4] = null;
         Plan p = new Plan(cont, serve);
 
         for(Destination d: dest) {

@@ -70,7 +70,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
             final VHItem holder= (VHItem)viewHolder;
             holder.container.setBackgroundColor(Color.LTGRAY);
-            if (i == selected) {
+            if (i == selected - 1) {
                 holder.container.setBackgroundColor(Color.argb(255,40,40,40));
             }
 
@@ -112,7 +112,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
                         //enter code here to select as next destination
                         ((PlanActivity) mContext).newDestination(mDestinationList.get(i));
-                        selected = holder.getAdapterPosition();
+                        selected = holder.getAdapterPosition() + 1;
                         updateList(mDestinationList);
 
 

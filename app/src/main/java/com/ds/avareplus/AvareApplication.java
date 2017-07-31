@@ -32,9 +32,14 @@ import org.acra.annotation.ReportsCrashes;
         resDialogTitle = R.string.CrashLabel,
         resDialogText = R.string.CrashText)
 public class AvareApplication extends Application {
+
+
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+
 
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
@@ -43,4 +48,5 @@ public class AvareApplication extends Application {
         // This is transition code to 256 tiles, remove after transition is complete
         BitmapHolder.setDims(new Preferences(getApplicationContext()).isTileSize256() ? 256 : 512);
     }
+
 }

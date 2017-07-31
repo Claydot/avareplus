@@ -6,6 +6,31 @@
     android:orientation="vertical">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/LinearLaytop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFA9A9A9"
+        android:weightSum="1">
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text=""
+            android:ems="10"
+            android:id="@+id/editRoute"
+            android:layout_weight="0.99" />
+
+        <Button
+            android:text="Create Route"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/Route_Button" />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/LinearLay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,10 +39,10 @@
         android:weightSum="1">
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:text="Name"
+            android:text=""
             android:ems="10"
             android:id="@+id/editText"
             android:layout_weight="0.99" />
@@ -121,10 +146,12 @@
         android:orientation="horizontal"
         android:background="#FFA9A9A9"
         android:weightSum="1">
-        <Space
+        <TextView
+            android:text="Total"
             android:layout_width="0px"
-            android:layout_height="match_parent"
-            android:layout_weight=".17"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/total"
+            android:layout_weight="0.17"/>
         <Space
             android:layout_width="0px"
             android:layout_height="match_parent"
@@ -193,21 +220,22 @@
             android:text="Save"
             android:layout_width="0px"
             android:layout_weight=".33"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:id="@+id/save_button" />
 
         <Button
-            android:text="Activate"
+            android:text="Deactivated"
             android:layout_width="0px"
             android:layout_weight=".33"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
+            android:background="@color/darkred"
             android:id="@+id/activate_button" />
 
         <Button
             android:text="Load"
             android:layout_width="0px"
             android:layout_weight=".33"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:id="@+id/load_button" />
 
 

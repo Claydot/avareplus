@@ -328,6 +328,18 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Go to background
                  */
+
+
+                //Code for writing to Amazon Server
+
+                ResearchFile.createFile(getApplicationContext(), "researchtest.txt");
+                ResearchFile.append("YOO IT WORKED!!!");
+                ResearchFile.append("Testy123");
+                ServerUpload server = new ServerUpload(getApplicationContext());
+                server.upload(ResearchFile.getFilePath());
+                //end code for writing to Amazon server
+
+
                 setTrackState(false);   // ensure tracks are turned off
                 LocationActivity.super.onBackPressed();
                 dialog.dismiss();

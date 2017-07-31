@@ -83,7 +83,8 @@ public class RadioActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                setNearest();
+
+
             }
 
 
@@ -92,16 +93,12 @@ public class RadioActivity extends Activity {
 
 
 
-        nearestText = (TextView) view.findViewById(R.id.nearest_radio);
-
-
+        nearestText = (TextView) view.findViewById(R.id.destination_radio);
         nearestList = (ListView) view.findViewById(R.id.nearest_radio_list);
         mNearestAdapt = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1,
                 mNearestList);
         nearestList.setAdapter(mNearestAdapt);
-
-
 
     }
 
@@ -118,6 +115,8 @@ public class RadioActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
+        //reset all frequencies
+        destinationFreq();
 
     }
 
@@ -138,23 +137,24 @@ public class RadioActivity extends Activity {
         super.onStop();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
-    public void setNearest() {
+    public void destinationFreq() {
+        if (mService == null) {
+            return;
+        }
         Destination d = mService.getDestination();
-
-
         if (d !=null) {
             mNearestList.clear();
-            nearestText.setText(d.getID());
+            nearestText.setText("Current Destination: " + d.getID());
             mNearestList.addAll(new ArrayList<String>(mDataSource.findFrequencies(d.getID())));
             mNearestAdapt.notifyDataSetChanged();
         }
+    }
 
 
+
+    public void refresh() {
+        destinationFreq();
 
     }
 
@@ -197,26 +197,7 @@ public class RadioActivity extends Activity {
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
-
-
-
-
     private void connect(StorageService s) {
         mService = s;
-        Log.d("Connect", "mService Connected");
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

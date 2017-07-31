@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -54,6 +55,7 @@ import android.widget.Toast;
 
 import com.ds.avareplus.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avareplus.gps.GpsInterface;
+import com.ds.avareplus.place.Airway;
 import com.ds.avareplus.place.Destination;
 import com.ds.avareplus.place.DestinationFactory;
 import com.ds.avareplus.place.Plan;
@@ -64,9 +66,11 @@ import com.ds.avareplus.utils.GenericCallback;
 import com.ds.avareplus.utils.Helper;
 import com.ds.avareplus.webinfc.WebAppPlanInterface;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -90,6 +94,8 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     private Preferences mPref;
     private String currentPlan;
 
+    private CreateTask mCreateTask;
+
 
 
     private Button mBSearch;
@@ -107,6 +113,9 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     private TextView mTotalEte;
     private TextView mTotalFuel;
     private TextView mTotalDistance;
+
+    private EditText mRouteEdit;
+    private Button mRouteBttn;
 
 
 
@@ -141,6 +150,8 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     public void onCreate(Bundle savedInstanceState) {
 
 
+
+
         mPref = new Preferences(this.getApplicationContext());
 
         getPlanNames(10);
@@ -157,36 +168,36 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         setContentView(view);
 
 
+        mRouteEdit = (EditText) view.findViewById(R.id.editRoute);
+        mRouteBttn = (Button) view.findViewById(R.id.Route_Button);
+        mRouteBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String searchVal = mRouteEdit.getText().toString();
+                createPlan(searchVal);
 
-
-
-
-
-
-
-
-
-
-
-
+            }
+        });
 
 
 
 
         mSearchInput = (EditText) view.findViewById(R.id.editText);
-
-
-
-
         mBSearch = (Button) view.findViewById(R.id.Search_Button);
         mBSearch.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-               mListView.setVisibility(View.VISIBLE);
+               if (mListView.getVisibility() == View.VISIBLE) {
+                   mListView.setVisibility(View.GONE);
+               } else {
+                   mListView.setVisibility(View.VISIBLE);
+               }
+
                String searchVal = mSearchInput.getText().toString();
                 mSearchList.clear();
                search(searchVal);
+
             }
 
 
@@ -282,6 +293,9 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
             public void onClick(View v) {
                 if(currentPlan != null) {
                     deletePlan(currentPlan);
+                } else {
+
+                    clear();
                 }
             }
 
@@ -299,7 +313,9 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
                 if (plan.isActive()) {
                     plan.makeInactive();
                     mService.setDestination(null);
-                    mActivateButton.setText("Deactivate");
+                    mActivateButton.setText("Deactivated");
+                    mActivateButton.setBackgroundColor(getResources().getColor(R.color.darkred));
+
                 } else {
 
                     plan.clear();
@@ -311,7 +327,8 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
                     plan.makeActive(mService.getGpsParams());
                     if (plan.getDestination(plan.findNextNotPassed()) != null) {
                         mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
-                        mActivateButton.setText(getString(R.string.Active));
+                        mActivateButton.setText("Activated");
+                        mActivateButton.setBackgroundColor(getResources().getColor(R.color.green));
                     }
                 }
             }
@@ -767,7 +784,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         if (mPlan != null) {
             mPlan.clear();
         }
-            updatePlan();
+        updatePlan();
         mSavedPlans.remove(name);
         mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
 
@@ -808,6 +825,118 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
     }
     public void saveDialog() {
         InputDialog.planSaveDialog(this);
+    }
+    public void clear() {
+        mPlan.clear();
+        updatePlan();
+    }
+
+    //create plan by just typing in route
+    public void createPlan(String value) {
+
+    	/*
+         * If text is 0 length or too long, then do not search, show last list
+         */
+        if(0 == value.length()) {
+            return;
+        }
+
+        if(null != mCreateTask) {
+            if (!mCreateTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
+                /*
+                 * Cancel the last query
+                 */
+                mCreateTask.cancel(true);
+            }
+        }
+
+       // mHandler.sendEmptyMessage(MSG_BUSY);
+        mCreateTask = new CreateTask();
+        mCreateTask.execute(value);
+    }
+
+    /**
+     * @author zkhan
+     *
+     */
+    private class CreateTask extends AsyncTask<Object, Void, Boolean> {
+
+        LinkedList<String> selection = new LinkedList<String>();
+
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
+        @Override
+        protected Boolean doInBackground(Object... vals) {
+
+            Thread.currentThread().setName("Create");
+
+            if(null == mService) {
+                return false;
+            }
+
+            String srch[] = ((String)vals[0]).toUpperCase(Locale.US).split(" ");
+
+            /*
+             * Here we guess types since we do not have user select
+             */
+
+            for(int num = 0; num < srch.length; num++) {
+	            /*
+	             * This is a geo coordinate?
+	             */
+                if(Helper.isGPSCoordinate(srch[num])) {
+                    String found = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch[num])).getHashedName();
+                    selection.add(found);
+                    continue;
+                }
+
+	            /*
+	             * Search from database. Make this a simple one off search
+	             */
+                StringPreference s = mService.getDBResource().searchOne(srch[num]);
+                if(s != null) {
+                    String found = s.getHashedName();
+                    selection.add(found);
+                }
+                else if(num > 0 && num < (srch.length - 1)) {
+                    // Federal airway? Must start and end at some point
+                    LinkedList<String> ret = Airway.find(mService, srch[num - 1], srch[num], srch[num + 1]);
+                    if(ret != null) {
+                        // Found airway, insert. Airway is always a sequence of GPS points.
+                        selection.addAll(ret);
+                    }
+                }
+            }
+            return true;
+        }
+
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(Boolean result) {
+            /*
+             * Set new search adapter
+             */
+
+            if(null == selection || false == result) {
+               // mHandler.sendEmptyMessage(MSG_NOTBUSY);
+                return;
+            }
+
+            /*
+             * Add each to the plan search
+             */
+            clear();
+
+            for (String val : selection) {
+                String id = StringPreference.parseHashedNameId(val);
+                String type = StringPreference.parseHashedNameDestType(val);
+                String dbtype = StringPreference.parseHashedNameDbType(val);
+                addToPlan(id, type, dbtype);
+            }
+        }
     }
 
 }

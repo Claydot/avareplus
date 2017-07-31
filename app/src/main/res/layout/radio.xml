@@ -11,11 +11,11 @@
         android:id="@+id/toggle_radio" />
 
     <TextView
-        android:text="Nearest"
+        android:text="Current Destination: "
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:id="@+id/nearest_radio"
+        android:id="@+id/destination_radio"
         android:layout_weight="0.15" />
 
     <ListView

@@ -22,6 +22,9 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * Created by zkhan on 1/25/16.
  */
@@ -32,7 +35,6 @@ import org.acra.annotation.ReportsCrashes;
         resDialogTitle = R.string.CrashLabel,
         resDialogText = R.string.CrashText)
 public class AvareApplication extends Application {
-
 
 
     @Override
@@ -47,6 +49,9 @@ public class AvareApplication extends Application {
         // XXX:
         // This is transition code to 256 tiles, remove after transition is complete
         BitmapHolder.setDims(new Preferences(getApplicationContext()).isTileSize256() ? 256 : 512);
+
+
+
     }
 
 }

@@ -68,6 +68,8 @@ import com.ds.avareplus.webinfc.WebAppMapInterface;
 
 import java.io.File;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -331,10 +333,6 @@ public class LocationActivity extends Activity implements Observer {
 
 
                 //Code for writing to Amazon Server
-
-                ResearchFile.createFile(getApplicationContext(), "researchtest.txt");
-                ResearchFile.append("YOO IT WORKED!!!");
-                ResearchFile.append("Testy123");
                 ServerUpload server = new ServerUpload(getApplicationContext());
                 server.upload(ResearchFile.getFilePath());
                 //end code for writing to Amazon server
@@ -587,6 +585,8 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
+
+                ResearchFile.append("Location-Menu");
                 showMenu();
             }
 
@@ -597,6 +597,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
+                ResearchFile.append("Location-Help");
                 Intent intent = new Intent(LocationActivity.this, WebActivity.class);
                 intent.putExtra("url", NetworkHelper.getHelpUrl(LocationActivity.this));
                 startActivity(intent);
@@ -626,6 +627,7 @@ public class LocationActivity extends Activity implements Observer {
                 Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(i);
+
             }
         });
 
@@ -731,10 +733,12 @@ public class LocationActivity extends Activity implements Observer {
                 if(mDrawButton.getText().equals(getString(R.string.Draw))) {
                     mLocationView.setDraw(true);
                     mDrawClearButton.setVisibility(View.VISIBLE);
+                    ResearchFile.append("Location-DrawTrue");
                 }
                 else {
                     mLocationView.setDraw(false);
                     mDrawClearButton.setVisibility(View.INVISIBLE);
+                    ResearchFile.append("Location-DrawFalse");
                 }
             }
 

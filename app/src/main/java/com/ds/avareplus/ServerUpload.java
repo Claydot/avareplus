@@ -40,7 +40,7 @@ public class ServerUpload {
         File file = new File(filePath);
         TransferObserver observer = transferUtility.upload(
                 "claydodsonresearch",     /* The bucket to upload to */
-                "test",    /* The key for the uploaded object */
+                file.getName(),    /* The key for the uploaded object */
                 file        /* The file where the data to upload exists */
         );
 

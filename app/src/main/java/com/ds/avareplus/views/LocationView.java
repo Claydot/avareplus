@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 
+import com.ds.avareplus.GpsCoordinates;
 import com.ds.avareplus.R;
 import com.ds.avareplus.StorageService;
 import com.ds.avareplus.adsb.NexradBitmap;
@@ -302,6 +303,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void updateCoordinates() {
         mOrigin.update(mGpsTile, getWidth(), getHeight(), mGpsParams, mPan, mScale);
+        GpsCoordinates.Latitude = mGpsParams.getLatitude();
+        GpsCoordinates.Longitude = mGpsParams.getLongitude();
+        GpsCoordinates.Altitude = mGpsParams.getAltitude();
+        GpsCoordinates.Heading = mGpsParams.getBearing();
+        GpsCoordinates.Declination = mGpsParams.getDeclinition();
+        GpsCoordinates.Speed = mGpsParams.getSpeed();
     }
 
     /**
@@ -1109,6 +1116,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         loadTiles();
         postInvalidate();
 
+
+
         // Tell the CDI the paint that we use for display tfr
         mService.getCDI().setSize(mPaint, Math.min(getWidth(),  getHeight()));
         mService.getVNAV().setSize(mPaint, Math.min(getWidth(),  getHeight()));
@@ -1613,5 +1622,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         invalidate();
     }
+
 
 }

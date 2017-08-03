@@ -15,12 +15,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,6 +35,7 @@ import com.ds.avareplus.storage.DataSource;
 import com.ds.avareplus.storage.Preferences;
 import com.ds.avareplus.storage.StringPreference;
 import com.ds.avareplus.utils.Helper;
+import com.sromku.polygon.Line;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +48,11 @@ public class RadioActivity extends Activity {
 
 
     private Button toggle;
-    private TextView nearestText;
-    private ListView nearestList;
-    private ArrayAdapter mNearestAdapt;
-    ArrayList<String> mNearestList = new ArrayList<>();
     private DataSource mDataSource;
     private StorageService mService;
-
+    int displayState;   //display state 0 shows plan frequencies
+                        //display state 1 shows destination frequencies
+    private LinearLayout mLinearLayout;
 
 
     public void onBackPressed() {
@@ -69,10 +71,11 @@ public class RadioActivity extends Activity {
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.radio, null);
         setContentView(view);
+
+        mLinearLayout = (LinearLayout) view.findViewById(R.id.radio_layout);
 
         mDataSource = new DataSource(getApplicationContext());
 
@@ -83,6 +86,19 @@ public class RadioActivity extends Activity {
 
             @Override
             public void onClick(View v) {
+                if (displayState == 0) {
+                    upDatePlan();
+                    toggle.setText("Plan Frequencies");
+                    displayState = 1; //corresponds to plan frequencies
+                } else {
+                    //insert for destination freq if null then get last element in plan
+
+                    destinationFreq();
+                    toggle.setText("Destination Frequencies");
+                    displayState = 0;
+                }
+
+                ResearchFile.append("Toggle");
 
 
             }
@@ -92,13 +108,6 @@ public class RadioActivity extends Activity {
         });
 
 
-
-        nearestText = (TextView) view.findViewById(R.id.destination_radio);
-        nearestList = (ListView) view.findViewById(R.id.nearest_radio_list);
-        mNearestAdapt = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1,
-                mNearestList);
-        nearestList.setAdapter(mNearestAdapt);
 
     }
 
@@ -116,7 +125,8 @@ public class RadioActivity extends Activity {
         getApplicationContext().bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
         //reset all frequencies
-        destinationFreq();
+        refresh();
+
 
     }
 
@@ -142,20 +152,23 @@ public class RadioActivity extends Activity {
         if (mService == null) {
             return;
         }
+        mLinearLayout.removeAllViewsInLayout();
         Destination d = mService.getDestination();
         if (d !=null) {
-            mNearestList.clear();
-            nearestText.setText("Current Destination: " + d.getID());
-            mNearestList.addAll(new ArrayList<String>(mDataSource.findFrequencies(d.getID())));
-            mNearestAdapt.notifyDataSetChanged();
+            mLinearLayout.addView(createNewTextView(d.getID()));
+            mLinearLayout.addView(createNewListView(
+                    new ArrayList<String>(mDataSource.findFrequencies(d.getID()))));
         }
     }
 
 
 
     public void refresh() {
-        destinationFreq();
-
+        if(displayState == 1) {
+            upDatePlan();
+        } else {
+            destinationFreq();
+        }
     }
 
 
@@ -199,5 +212,59 @@ public class RadioActivity extends Activity {
     };
     private void connect(StorageService s) {
         mService = s;
+    }
+
+    private void showPlan() {
+        //enter data here to show plan
+
+    }
+
+    public void upDatePlan() {
+        //inflate plan data TODO
+        //completely clear out screen before hand
+        mLinearLayout.removeAllViewsInLayout();
+        if (mService == null) return;
+        Plan plan = mService.getPlan();
+        for(int i = 0; i < plan.getDestinationNumber(); i++) {
+            Destination d = plan.getDestination(i);
+            if (d !=null) {
+                mLinearLayout.addView(createNewTextView(d.getID()));
+                mLinearLayout.addView(createNewListView(
+                        new ArrayList<String>(mDataSource.findFrequencies(d.getID()))));
+            }
+
+        }
+
+    }
+
+    private TextView createNewTextView(String text) {
+        final ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final TextView textView = new TextView(this);
+        textView.setTextSize(40);
+        textView.setLayoutParams(lparams);
+        textView.setText(text);
+        return textView;
+    }
+    private ListView createNewListView(ArrayList<String> freq) {
+
+        final ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, 200);
+        final ListView frequencyList = new ListView(this);
+        frequencyList.setLayoutParams(lparams);
+        ArrayAdapter adapter = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1,
+                freq);
+        frequencyList.setAdapter(adapter);
+        frequencyList.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+        return frequencyList;
+
     }
 }

@@ -44,7 +44,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:largeHeap="true"
         android:name="com.ds.avareplus.AvareApplication"
         android:allowBackup="true">
-        
+
         <activity android:name="org.acra.CrashReportDialog"
             android:theme="@style/Theme.Dialog"
             android:process=":error_report"

@@ -2,6 +2,8 @@ package com.ds.avareplus;
 
 import android.content.Context;
 
+import com.ds.avareplus.gps.GpsParams;
+
 import java.io.File;
 import java.io.FileWriter;
 
@@ -10,7 +12,6 @@ import java.io.FileWriter;
  */
 
 public class ResearchFile {
-
 
     private static File gpxfile;
 
@@ -34,7 +35,17 @@ public class ResearchFile {
     }
 
 
-    public static void append(String sBody){
+    public static void append(String event){
+
+        Long time = (System.currentTimeMillis());
+        String timeStamp = time.toString();
+        Double lon = GpsCoordinates.Longitude;
+        Double lat = GpsCoordinates.Latitude;
+        Double Speed = GpsCoordinates.Speed;
+        Double Heading = GpsCoordinates.Heading;
+        Double Declination = GpsCoordinates.Declination;
+        String sBody = event + "," + timeStamp + "," + lat.toString() + "," + lon.toString()
+                + "," + Speed.toString() + "," + Heading.toString() + "," + Declination.toString();
 
         try{
             FileWriter writer = new FileWriter(gpxfile, true);

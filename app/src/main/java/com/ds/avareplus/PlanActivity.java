@@ -314,7 +314,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
                     plan.makeInactive();
                     mService.setDestination(null);
                     mActivateButton.setText("Deactivated");
-                    mActivateButton.setBackgroundColor(getResources().getColor(R.color.darkred));
+                   // mActivateButton.setBackgroundColor(getResources().getColor(R.color));
 
                 } else {
 
@@ -328,7 +328,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
                     if (plan.getDestination(plan.findNextNotPassed()) != null) {
                         mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
                         mActivateButton.setText("Activated");
-                        mActivateButton.setBackgroundColor(getResources().getColor(R.color.green));
+                        //mActivateButton.setBackgroundColor(getResources().getColor(R.color.green));
                     }
                 }
             }
@@ -717,6 +717,7 @@ public class PlanActivity extends FragmentActivity implements OnStartDragListene
         mService.newPlanFromStorage(mSavedPlans.get(name), false);
         mService.getPlan().setName(name);
         newPlan();
+        updatePlan();
     }
 
     //use to display Plan names

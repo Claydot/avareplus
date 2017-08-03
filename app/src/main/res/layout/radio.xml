@@ -9,19 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/toggle_radio" />
-
-    <TextView
-        android:text="Current Destination: "
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:id="@+id/destination_radio"
-        android:layout_weight="0.15" />
-
-    <ListView
-        android:id="@+id/nearest_radio_list"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:weightSum="1"
-        android:visibility="visible"/>
+        android:id="@+id/radio_layout">
+        </LinearLayout>
+
 </LinearLayout>

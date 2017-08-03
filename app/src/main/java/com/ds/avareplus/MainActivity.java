@@ -30,7 +30,10 @@ import android.widget.TextView;
 
 import com.ds.avareplus.storage.Preferences;
 import com.ds.avareplus.utils.Helper;
- 
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * 
  * @author zkhan
@@ -68,6 +71,18 @@ public class MainActivity extends TabActivity {
         mPref = new Preferences(this);
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
+
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("MM-dd-HH-mm");
+        String formattedDate = df.format(c.getTime());
+        String fileName = mPref.getRegisteredEmail() + formattedDate + ".txt";
+        ResearchFile.createFile(getApplicationContext(),  fileName);
+
+
+
+
+
          
         requestWindowFeature(Window.FEATURE_NO_TITLE);
                 
